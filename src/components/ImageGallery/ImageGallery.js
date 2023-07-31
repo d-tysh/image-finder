@@ -1,12 +1,16 @@
 import { ImageGalleryItem } from "components/ImageGalleryItem/ImageGalleryItem"
 import { ImageGalleryList } from "./ImageGallery.styled"
+import { PureComponent } from "react";
 
-export const ImageGallery = (props) => {
-    return (
-        <ImageGalleryList>
-            {
-                props.images.map(image => <ImageGalleryItem key={image.id} image={image} />)
-            }
-        </ImageGalleryList>
-    )
+export class ImageGallery extends PureComponent {
+    render() {
+        const {images} = this.props;
+        return (
+            <ImageGalleryList>
+                {
+                    images.map(image => <ImageGalleryItem key={image.id} image={image} />)
+                }
+            </ImageGalleryList>
+        )
+    }
 }

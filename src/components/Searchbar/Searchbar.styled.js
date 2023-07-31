@@ -10,23 +10,25 @@ export const HeaderSearchbar = styled.header`
 export const FormSearchbar = styled.form`
     display: block;
     margin: 0 auto;
-    position: relative;
 `;
 
 export const ButtonSearchbar = styled.button`
-    position: absolute;
     background-color: inherit;
     border: none;
-    z-index: 1;
-    width: 30px;
     height: 30px;
-    top: 3px;
-    left: 3px;
+    border-radius: 4px;
+    background-color: #ffffff;
     cursor: pointer;
+
+    :hover {
+        background-color: grey; 
+        color: #ffffff;
+    }
 `;
 
 export const InputSearchbar = styled.input`
-    padding: 8px 8px 8px 32px;
+    padding: 8px;
     border: none;
     border-radius: 4px;
+    margin-right: 8px;
 `;

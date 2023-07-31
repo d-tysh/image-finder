@@ -1,3 +1,6 @@
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import { Component } from "react";
 import { Searchbar } from "./Searchbar/Searchbar";
 import { ImageGallery } from "./ImageGallery/ImageGallery";
@@ -18,6 +21,11 @@ export class App extends Component {
     e.preventDefault();
 
     const { searchQuery, page } = this.state;
+
+    if (!searchQuery.trim()) {
+      toast.info("Enter search query!");
+      return;
+    }
 
     this.setState({ page: 1, loading: true, error: null })
 
@@ -69,6 +77,7 @@ export class App extends Component {
         {gallery}
         {btnLoadMore}
         {loading && <Loader />}
+        <ToastContainer />
       </div>
     )
   }

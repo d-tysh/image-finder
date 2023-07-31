@@ -1,15 +1,10 @@
 import { ButtonSearchbar, FormSearchbar, HeaderSearchbar, InputSearchbar } from "./Searchbar.styled"
-import { BsSearch } from 'react-icons/bs';
 
 export const Searchbar = ({onSubmit, handleInput}) => {
 
     return (
         <HeaderSearchbar>
             <FormSearchbar onSubmit={onSubmit}>
-                <ButtonSearchbar type="submit" className="button">
-                    <BsSearch />
-                </ButtonSearchbar>
-
                 <InputSearchbar
                     onChange={handleInput}
                     type="text"
@@ -17,6 +12,9 @@ export const Searchbar = ({onSubmit, handleInput}) => {
                     autoFocus
                     placeholder="Search images and photos"
                 />
+                <ButtonSearchbar type="submit" className="button">
+                    Search
+                </ButtonSearchbar>
             </FormSearchbar>
         </HeaderSearchbar>
     )
