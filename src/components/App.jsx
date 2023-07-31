@@ -14,7 +14,8 @@ export class App extends Component {
     images: null,
     page: 1,
     loading: false,
-    error: null
+    error: null,
+    totalImages: null
   }
 
   handleSubmit = (e) => {
@@ -34,6 +35,7 @@ export class App extends Component {
         this.setState({
           images: images.hits.length ? images.hits : [],
           page: this.state.page + 1,
+          totalImages: images.totalHits
         })
       })
       .catch(() => this.setState({error: true}))
@@ -48,6 +50,8 @@ export class App extends Component {
     const { searchQuery, page } = this.state;
 
     this.setState({loading: true, error: null})
+
+    console.log(this.state.totalImages);
 
     getImages(searchQuery, page)
       .then(images => {
@@ -64,10 +68,10 @@ export class App extends Component {
   }
 
   render() {
-    const { images, loading, error } = this.state;
+    const { images, loading, error, page, totalImages } = this.state;
 
     const gallery = !error && images && <ImageGallery images={images} />;
-    const btnLoadMore = !error && !loading && images && <Button text='Load more' onClick={this.loadMoreImages}/>
+    const btnLoadMore = ((page - 1) < (totalImages / 12)) && !error && !loading && images && <Button text='Load more' onClick={this.loadMoreImages}/>
     const errorMessage = error ? 'Oops, something wrong...' : null;
 
     return (
