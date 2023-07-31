@@ -1,14 +1,14 @@
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import { Component } from "react";
+import { PureComponent } from "react";
 import { Searchbar } from "./Searchbar/Searchbar";
 import { ImageGallery } from "./ImageGallery/ImageGallery";
 import { Loader } from "./Loader/Loader";
 import { Button } from "./Button/Button";
 import { getImages } from "services/getImages";
 
-export class App extends Component {
+export class App extends PureComponent {
   state = {
     searchQuery: '',
     images: null,
