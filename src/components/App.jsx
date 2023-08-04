@@ -1,88 +1,87 @@
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import { Component } from "react";
+import { useRef, useState } from "react";
 import { Searchbar } from "./Searchbar/Searchbar";
 import { ImageGallery } from "./ImageGallery/ImageGallery";
 import { Loader } from "./Loader/Loader";
 import { Button } from "./Button/Button";
 import { getImages } from "services/getImages";
 
-export class App extends Component {
-  state = {
-    searchQuery: '',
-    images: null,
-    page: 1,
-    loading: false,
-    error: null,
-    totalImages: null
-  }
-
-  handleSubmit = (e) => {
+export const App = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [images, setImages] = useState(null);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [totalImages, setTotalImages] = useState(null);
+  const prevQuery = useRef('');
+  
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const { searchQuery, page } = this.state;
 
     if (!searchQuery.trim()) {
       toast.info("Enter search query!");
       return;
     }
 
-    this.setState({ page: 1, loading: true, error: null })
+    if (searchQuery === prevQuery.current) {
+      toast.error('Enter new query!');
+      return;
+    }
+
+    setPage(1);
+    setLoading(true);
+    setError(null);
 
     getImages(searchQuery, page)
       .then(images => {
-        this.setState({
-          images: images.hits.length ? images.hits : [],
-          page: this.state.page + 1,
-          totalImages: images.totalHits
-        })
+
+        if (!images.hits.length) {
+          setImages([]);
+          toast(`Sorry, no data for query ${searchQuery}`);
+          return;
+        }
+
+        setImages(images.hits.length ? images.hits : []);
+        setPage(prevPage => prevPage + 1);
+        setTotalImages(images.totalHits);
+        prevQuery.current = searchQuery;
       })
-      .catch(() => this.setState({error: true}))
-      .finally(() => this.setState({loading: false}))
+      .catch(() => setError(true))
+      .finally(() => setLoading(false));
   }
 
-  handleInput = (e) => {
-    this.setState({ searchQuery: e.target.value })
+  const handleInput = (e) => {
+    setSearchQuery(e.target.value);
   }
 
-  loadMoreImages = () => {
-    const { searchQuery, page } = this.state;
-
-    this.setState({loading: true, error: null})
-
-    console.log(this.state.totalImages);
+  const loadMoreImages = () => {
+    setLoading(true);
+    setError(null);
 
     getImages(searchQuery, page)
       .then(images => {
-        this.setState(prevState => {
-          return {
-            images: [...prevState.images, ...images.hits],
-            page: prevState.page + 1,
-            loading: false
-          }
-        })
+        setImages(prevImages => [...prevImages, ...images.hits]);
+        setPage(prevPage => prevPage + 1);
+        setLoading(false);
       })
-      .catch(() => this.setState({error: true}))
-      .finally(() => this.setState({loading: false}))
+      .catch(() => setError(true))
+      .finally(() => setLoading(false));
   }
 
-  render() {
-    const { images, loading, error, page, totalImages } = this.state;
+  const gallery = !error && images && <ImageGallery images={images} />;
+  const btnLoadMore = ((page - 1) < (totalImages / 12)) && !error && !loading && (images.length > 0) && <Button text='Load more' onClick={loadMoreImages}/>
+  const errorMessage = error ? 'Oops, something wrong...' : null;
 
-    const gallery = !error && images && <ImageGallery images={images} />;
-    const btnLoadMore = ((page - 1) < (totalImages / 12)) && !error && !loading && images && <Button text='Load more' onClick={this.loadMoreImages}/>
-    const errorMessage = error ? 'Oops, something wrong...' : null;
-
-    return (
-      <div>
-        <Searchbar onSubmit={this.handleSubmit} handleInput={this.handleInput} />
-        {errorMessage}
-        {gallery}
-        {btnLoadMore}
-        {loading && <Loader />}
-        <ToastContainer />
-      </div>
-    )
-  }
+  return (
+    <div>
+      <Searchbar onSubmit={handleSubmit} handleInput={handleInput} />
+      {errorMessage}
+      {gallery}
+      {btnLoadMore}
+      {loading && <Loader />}
+      <ToastContainer />
+    </div>
+  )
 };
