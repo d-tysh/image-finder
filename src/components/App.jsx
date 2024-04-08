@@ -17,7 +17,7 @@ export const App = () => {
   const [totalImages, setTotalImages] = useState(null);
   const prevQuery = useRef('');
   
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
     if (!searchQuery.trim()) {
@@ -30,30 +30,26 @@ export const App = () => {
       return;
     }
 
-    setPage(1);
-    setLoading(true);
-    setError(null);
-
     getImages(searchQuery, page)
-      .then(images => {
+    .then(images => {
+      if (!images.hits.length) {
+        setImages([]);
+        toast(`Sorry, no data for query ${searchQuery}`);
+        return;
+      }
 
-        if (!images.hits.length) {
-          setImages([]);
-          toast(`Sorry, no data for query ${searchQuery}`);
-          return;
-        }
-
-        setImages(images.hits.length ? images.hits : []);
-        setPage(prevPage => prevPage + 1);
-        setTotalImages(images.totalHits);
-        prevQuery.current = searchQuery;
-      })
-      .catch(() => setError(true))
-      .finally(() => setLoading(false));
-  }
+      setImages(images.hits.length ? images.hits : []);
+      setPage(prevPage => prevPage + 1);
+      setTotalImages(images.totalHits);
+      prevQuery.current = searchQuery;
+    })
+    .catch(() => setError(true))
+    .finally(() => setLoading(false));
+}
 
   const handleInput = (e) => {
     setSearchQuery(e.target.value);
+    setPage(1);
   }
 
   const loadMoreImages = () => {
